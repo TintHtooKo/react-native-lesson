@@ -1,10 +1,11 @@
 
-import {Alert, FlatList, ScrollView, StatusBar, StyleSheet, Text,  TextInput,  View } from 'react-native';
+import {Alert, FlatList, LayoutAnimation, Platform, Pressable, ScrollView, StatusBar, StyleSheet, Text,  TextInput,  UIManager,  View } from 'react-native';
 import List from '../components/List';
 import { useEffect, useState } from 'react';
 import { Link } from 'expo-router';
 import { theme } from '../theme';
 import { getData, storeData } from '../utils/storage';
+import * as Haptics from 'expo-haptics';
 
 type TodoListType = {
   id : string,
@@ -12,29 +13,13 @@ type TodoListType = {
   isDone : boolean
 }
 
-// const staticTodo : TodoListType[] = [
-//   {
-//     id : '1',
-//     message : 'hello world',
-//     isDone : false
-//   },
-//   {
-//     id : '2',
-//     message : 'hello React Native',
-//     isDone : false
-//   },
-// ]
-
-// generate custom array for testing
-// const tempoArray : TodoListType[] = new Array(500).fill(null).map((item,index)=>{
-//   return {
-//     id : String(index + 1),
-//     message : String(index + 1),
-//     isDone : false
-//   }
-// })
-
 const KEY = 'todo-app'
+
+if (Platform.OS === 'android') {
+  if (UIManager.setLayoutAnimationEnabledExperimental) {
+    UIManager.setLayoutAnimationEnabledExperimental(true);
+  }
+}
 
 
 export default function App() {
@@ -43,8 +28,9 @@ export default function App() {
 
   const changeStatus = async(id : string) =>{
     const updatedTodos = todos.map((td)=>td.id === id ? {...td, isDone : !td.isDone} : td)
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
     setTodos(updatedTodos)
-    await storeData(todos)
+    await storeData(updatedTodos)
   }
 
    // for storage
@@ -62,6 +48,7 @@ export default function App() {
       message : inputVal,
       isDone : false
     }]
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut)
     setTodos(newTodo)
     await storeData(newTodo)
     setInputVal('')
@@ -84,59 +71,22 @@ export default function App() {
           text : "Yes",
           onPress : async() => {
           const updatedTodos = todos.map((td)=> td.id === id ? {...td, isDone : !td.isDone} : td)
+          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
           setTodos(updatedTodos),
-          await storeData(todos)
+          await storeData(updatedTodos)
           }
         }
       ]) 
   }
 
+  const deleteAllTodos = async() =>{
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium)
+    setTodos([])
+    await storeData([])
+  }
+
   
   return (
-    //For ScrollView
-    // ScrollView use yin contentContainerStyle={{alignItems: 'center',justifyContent: 'center',}} htae pay ya mal
-    // styles htae mhr htae sa yar ma lo tot bu
-    // <ScrollView 
-    // contentContainerStyle={{alignItems: 'center',justifyContent: 'center',}} 
-    // style={styles.container}
-    // stickyHeaderIndices={[0]} 
-    // >
-    //   <View style={{width : '100%',paddingHorizontal : 20}}>
-    //     <TextInput placeholder='eg. Go to Code' 
-    //     // onChangeText={setInputVal} Or
-    //     onChangeText={(val)=>setInputVal(val)} 
-    //     enterKeyHint='next'
-    //     onSubmitEditing={addNewTodo}
-    //     style={styles.inputBox}
-    //     />
-    //   </View>
-    //  <View style={styles.listContainer}>
-    //   {/* {
-    //     todos.map((td)=>(
-    //       // <List key={td.id} {...td}/> Or
-    //       <List undoStatus={undoStatus} changeStatus={changeStatus} key={td.id} id={td.id} message={td.message} isDone={td.isDone}/>
-    //     ))
-    //   } */}
-    //   <FlatList
-    //   data={todos}
-    //   renderItem={({item})=>{
-    //     return(
-    //       <List 
-    //       undoStatus={undoStatus} 
-    //       changeStatus={changeStatus}
-    //       {...item}
-    //       />)
-    //   }}
-    //   keyExtractor={item=>item.id}
-    //   />
-    //  </View>
-
-    //  {/* StatusBar ka screen paw ka battery percent menu paw ma yout ag use tr */}
-    //  <StatusBar barStyle={"dark-content"} backgroundColor={"white"} />
-    // </ScrollView>
-
-
-
     //For FlatList
 
     <View style={styles.container}>
@@ -156,7 +106,6 @@ export default function App() {
       data={todos}
       renderItem={({item})=>{
         return(
-
           <List 
           undoStatus={undoStatus} 
           changeStatus={changeStatus}
@@ -164,6 +113,17 @@ export default function App() {
           />)
       }}
       keyExtractor={item=>item.id}
+      ListFooterComponent={
+        <>
+          {
+            todos.length !== 0 && (
+              <Pressable onPress={deleteAllTodos} style={styles.dangerContainer}>
+              <Text style={styles.textDanger}>Delete All</Text>
+            </Pressable>
+            )
+          }
+        </>
+      }
       />
     </View>
 
@@ -202,5 +162,17 @@ const styles = StyleSheet.create({
     marginVertical : 2,
     width : '100%',
     backgroundColor : 'white'
+  },
+  dangerContainer : {
+    backgroundColor : 'red',
+    paddingVertical : 10,
+    marginVertical : 10,
+    borderRadius : 8,
+  },
+  textDanger : {
+    textAlign : "center",
+    fontSize : 16,
+    fontWeight : 'bold',
+    color : 'white',
   }
 });
