@@ -19,6 +19,7 @@ import React from 'react'
 import Entypo from '@expo/vector-icons/Entypo';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { BackHandler } from 'react-native';
+import Ionicons from '@expo/vector-icons/Ionicons';
 
 
 const Layout = () => {
@@ -41,10 +42,10 @@ const Layout = () => {
       />
 
       <Tabs.Screen 
-      name='creation' 
+      name='notification' 
       options={{
-        title : "Creation",
-        tabBarIcon : ({color,size}) => <MaterialCommunityIcons name="creation" size={size} color={color} />
+        title : "Notification",
+        tabBarIcon : ({color,size}) => <Ionicons name="notifications-outline" size={size} color={color} />
     }}
       />
 
