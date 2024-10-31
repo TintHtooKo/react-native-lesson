@@ -9,7 +9,7 @@ const Layout = () => {
       <Stack.Screen 
       name='index' 
       options={{
-        title : "Stop Watch App",
+        title : "Event Countdown App",
         headerRight : () => (
         // regular so yin icon ko click yin icon ko ti ti kya kya hti mha ya mal,
         // ae lo ma phit ag Pressable use ya tal. ae dr so icon ye a nar ko click yin lae ya tal

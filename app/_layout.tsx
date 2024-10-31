@@ -36,7 +36,7 @@ const Layout = () => {
       <Tabs.Screen 
       name='stopwatch' 
       options={{
-        title : "Stop Watch",
+        title : "Event",
         headerShown : false,
         tabBarIcon : ({color,size}) => <Entypo name="stopwatch" size={size} color={color} />}}
       />

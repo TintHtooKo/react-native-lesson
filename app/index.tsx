@@ -30,7 +30,7 @@ export default function App() {
     const updatedTodos = todos.map((td)=>td.id === id ? {...td, isDone : !td.isDone} : td)
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
     setTodos(updatedTodos)
-    await storeData(updatedTodos)
+    await storeData(KEY,updatedTodos)
   }
 
    // for storage
@@ -50,7 +50,7 @@ export default function App() {
     }]
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut)
     setTodos(newTodo)
-    await storeData(newTodo)
+    await storeData(KEY,newTodo)
     setInputVal('')
   }
 
@@ -73,7 +73,7 @@ export default function App() {
           const updatedTodos = todos.map((td)=> td.id === id ? {...td, isDone : !td.isDone} : td)
           Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
           setTodos(updatedTodos),
-          await storeData(updatedTodos)
+          await storeData(KEY,updatedTodos)
           }
         }
       ]) 
@@ -82,7 +82,7 @@ export default function App() {
   const deleteAllTodos = async() =>{
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium)
     setTodos([])
-    await storeData([])
+    await storeData(KEY,[])
   }
 
   
@@ -114,7 +114,7 @@ export default function App() {
       }}
       keyExtractor={item=>item.id}
       ListFooterComponent={
-        <>
+        <View>
           {
             todos.length !== 0 && (
               <Pressable onPress={deleteAllTodos} style={styles.dangerContainer}>
@@ -122,7 +122,7 @@ export default function App() {
             </Pressable>
             )
           }
-        </>
+        </View>
       }
       />
     </View>
